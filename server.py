@@ -17,7 +17,9 @@ def login():
 def dashboard():
     return render_template("index3.html")
 
-
+@app.route("/formEdited.html")
+def form_input():
+    return render_template("formEdited.html")
 
 def Create_table():
     createQuery="""
