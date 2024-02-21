@@ -21,6 +21,11 @@ def dashboard():
 def form_input():
     return render_template("formEdited.html")
 
+
+@app.route("/individualdashboard.html")
+def inner_device():
+    return render_template("individualdashboard.html")
+
 def Create_table():
     createQuery="""
                     CREATE TABLE IF NOT EXISTS datas(
