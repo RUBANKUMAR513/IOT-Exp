@@ -5,14 +5,18 @@ app = Flask(__name__)
 #insertQuery='INSERT INTO datas(name,password,gender) VALUES("%s","%s","%s")'
 #fetchQuery='SELECT * from datas'
 
-@app.route("/")
+
 def welcome_msg():
     return "Flask Working fine -- welcome"
 
+@app.route("/")
+def login():
+    return render_template("login.html")
 
 @app.route("/index3.html")
 def dashboard():
     return render_template("index3.html")
+
 
 
 def Create_table():
