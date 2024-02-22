@@ -64,7 +64,7 @@
             <div class="section__content section__content--p35">
                 <div class="header">
                 <div class="back">
-                  <button><i class="fa-solid fa-arrow-left fa-xl" style="color: white;"></i></button>  
+                  <button id="back" onclick="back()"><i class="fa-solid fa-arrow-left fa-xl" style="color: white;"></i></button>  
                 </div>
                 <div class="heading">
                         <h2>Add Device's</h2>
@@ -85,7 +85,7 @@
                                 </div>
                                 <div class="account-dropdown js-dropdown">
                                     <div class="account-dropdown__footer">
-                                        <a href="#">
+                                        <a href="login.html">
                                             <i class="zmdi zmdi-power"></i>Logout</a>
                                     </div>
                                 </div>
@@ -370,7 +370,7 @@
                                             <h3 class="text-center title-2">Device Details</h3>
                                         </div>
                                         <hr>
-                                        <form action="" method="post" novalidate="novalidate">
+                                        <form id="store_inputs" method="post" novalidate="novalidate">
                                             <div class="form-group">
                                                 <label for="cc-payment" class="control-label mb-1">Model</label>
                                                 <input id="cc-pament" name="cc-payment" type="text" class="form-control" aria-required="true" aria-invalid="false">
@@ -406,7 +406,7 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
+                                                <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block" onclick="details()">
                                     
                                                     Submit
     
@@ -441,7 +441,7 @@
     <script src="../static/vendor/chartjs/Chart.bundle.min.js"></script>
     <script src="../static/vendor/select2/select2.min.js">
     </script>
-
+    <script src="../static/js/AddDevice.js"></script>
     <!-- Main JS-->
     <script src="../static/js/main.js"></script>
 

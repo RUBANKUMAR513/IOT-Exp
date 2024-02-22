@@ -46,7 +46,6 @@
   margin-right: 10px;
 }
 
-
 .btn:hover {
   background-color: RoyalBlue;
 }
@@ -59,7 +58,7 @@
                 <div class="header3-wrap">
                     
                     <div>
-                      <button><i class="fa-solid fa-arrow-left fa-xl" style="color:white;"></i></button>
+                      <button id="back-btn" type="" onclick="back()"><i class="fa-solid fa-arrow-left fa-xl" style="color:white;"></i></button>
                     </div>
                     <div class="heading_for_dashboard">
                         <h2>Dashboard</h2>
@@ -72,7 +71,7 @@
                                 </div>
                                 <div class="account-dropdown js-dropdown">
                                     <div class="account-dropdown__footer">
-                                        <a href="#">
+                                        <a href="login.html">
                                             <i class="zmdi zmdi-power"></i>Logout</a>
                                     </div>
                                 </div>
@@ -297,7 +296,7 @@
                             <div class="au-breadcrumb-content">
                                 <div class="au-breadcrumb-left">
                                     <div class="add button">
-                                        <button class="btn"><i class="fa-solid fa-plus" style="color: #ffffff;"></i></button>
+                                        <button class="btn" onclick="addDevice()"><i class="fa-solid fa-plus" style="color: #ffffff;"></i></button>
                                         <label for="btn"><h4>Add Device</h4></label>
                                     </div>
                                 </div>
@@ -321,14 +320,22 @@
             <!-- STATISTIC-->
             <section class="statistic statistic2">
                 <div class="container">
-                    <div class="row">
+                    <div class="row" id="row">
+                              {% for rows in Result %}
                         <div class="col-md-6 col-lg-3">
                             <div class="statistic__item statistic__item--green">
-                                <h2 class="number">Device 1</h2>
-                                <span class="desc">Click</span>
-                                
+                                <h2 class="number">{{rows[4]}}</h2>
+                                <div>
+                                <a href="/individualdashboard.html?id={{rows[5]}}" style="margin-top: 30px;"><span class="desc">Click</span></a>
+                                </div>
+                                <div>
+                                 
+                                 <button id="{{rows[5]}}" onclick="del(id)"><span class="desc">delete</span></button>
+                                </div>
                             </div>
                         </div>
+                              {% endfor %}
+
                     </div>
                 </div>
             </section>
@@ -371,6 +378,8 @@
 
     <!-- Main JS-->
     <script src="../static/js/main.js"></script>
+    <script src="../static/js/dashboard.js"></script>
+    <script src="../static/js/create_box.js"></script>
 
 </body>
 
