@@ -32,6 +32,7 @@
     <link href="../static/vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
     <!-- Main CSS-->
     <link href="../static/css/theme.css" rel="stylesheet" media="all">
+    <link rel="stylesheet" href="../static/css/mystyle.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
@@ -63,7 +64,7 @@
                     <div class="heading_for_dashboard">
                         <h2>Dashboard</h2>
                     </div>
-                    <div class="header__tool">
+                    <div class="header__tool" style="margin-left: 250px;">
                         <div class="account-wrap">
                             <div class="account-item account-item--style2 clearfix js-item-menu">
                                 <div class="content">
@@ -300,12 +301,12 @@
                                         <label for="btn"><h4>Add Device</h4></label>
                                     </div>
                                 </div>
-                                <form class="au-form-icon--sm" action="" method="post">
-                                    <input class="au-input--w300 au-input--style2" type="text" placeholder="Search for devices">
-                                    <button class="au-btn--submit2" type="submit">
-                                        <i class="zmdi zmdi-search"></i>
-                                    </button>
-                                </form>
+                                <div class="search-container">
+                                    <form action="/action_page.php">
+                                      <input class="searchtag" type="text" placeholder="Search.." name="search">
+                                      <button type="submit"><i class="fa fa-search"></i></button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -326,11 +327,11 @@
                             <div class="statistic__item statistic__item--green">
                                 <h2 class="number">{{rows[4]}}</h2>
                                 <div>
-                                <a href="/individualdashboard.html?id={{rows[5]}}" style="margin-top: 30px;"><span class="desc">Click</span></a>
+                                <a class="clicking" href="/individualdashboard.html?id={{rows[5]}}"></a>
                                 </div>
-                                <div>
+                                <div style="text-align: end;">
                                  
-                                 <button id="{{rows[5]}}" onclick="del(id)"><span class="desc">delete</span></button>
+                                 <button id="{{rows[5]}}" onclick="del(id)"><i class="fa-solid fa-trash fa-lg" style="color: lightcyan;"></i></button>
                                 </div>
                             </div>
                         </div>

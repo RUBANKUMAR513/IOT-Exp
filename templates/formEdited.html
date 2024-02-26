@@ -340,7 +340,9 @@
 
         <!-- PAGE CONTENT-->
         <div class="page-content--bgf7">
-            
+            <div id="Alerts">
+                
+            </div>
 
             
 
@@ -370,7 +372,7 @@
                                             <h3 class="text-center title-2">Device Details</h3>
                                         </div>
                                         <hr>
-                                        <form id="store_inputs" method="post" novalidate="novalidate">
+                                        <form id="store_inputs" method="post">
                                             <div class="form-group">
                                                 <label for="cc-payment" class="control-label mb-1">Model</label>
                                                 <input id="cc-pament" name="cc-payment" type="text" class="form-control" aria-required="true" aria-invalid="false">
@@ -406,7 +408,14 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block" onclick="details()">
+                                                <input type="button" id="clr_btn" class="btn btn-lg btn-info btn-block" value="CLEAR" onclick="clr_form()" style="margin-bottom: 20px; background-color: black;:hover:active{border-color: yellow;}">
+                                    
+                                                    
+    
+                                            
+                                            </div>
+                                            <div>
+                                                <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block" onclick="checkvalidation()">
                                     
                                                     Submit
     
