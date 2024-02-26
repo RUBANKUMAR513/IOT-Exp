@@ -48,6 +48,11 @@ function Convert_binary(decimal){
    }
 }
 function check(){
-    let a=document.getElementById("s1").value;
-    console.log(a)
+    let a=document.getElementById("s1");
+    if(a.checked){
+        console.log("on")
+    }
+    else{
+        console.log("off")
+    }
 }
