@@ -14,6 +14,7 @@ Insertquery_Output='INSERT INTO dataOutput(Date,Time,DeviceID,Output) VALUES("%s
 particular_id_output='SELECT * FROM dataOutput WHERE DeviceId=? ORDER BY _id DESC;'
 
 Device_id=0
+decimal_value=0
 
 def welcome_msg():
     return "Flask Working fine -- welcome"
@@ -135,10 +136,13 @@ def getLastId():
 
 @app.route("/iopins",methods=['POST'])
 def io_pins():
+    print("hii")
     input=request.form["input"]
     deviceID=request.form["device_id"]
     insertdata(deviceID,input)
-    return str(random.randint(0,255))    
+    global decimal_value
+    print("ruban",decimal_value)
+    return str(decimal_value)    
 
 @app.route("/refresh_table")
 def refresh_table():
@@ -201,6 +205,22 @@ def refresh():
     
     return jsonify(data)
 
+
+@app.route("/decimal", methods=['POST'])
+def decimal():
+    try:
+        data = request.json
+        if data and 'value' in data:
+            first_data = data['value']
+            print("Received data:", first_data)
+            global decimal_value
+            decimal_value=first_data
+            return "Successfully received data"
+        else:
+            return "Error: Data format is incorrect", 400  
+    except Exception as e:
+        print("Error:", e)
+        return "Error: Internal Server Error", 500
 
 
 

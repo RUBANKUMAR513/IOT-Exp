@@ -26,15 +26,12 @@ function refresh(){
     
 }
 function Convert_binary(decimal){
-    let binary=""
-    while (decimal > 0) {
-        if (decimal & 1) {
-           binary = "1" + binary;
-        } else {
+    decimal=Number(decimal)
+    let binary=decimal.toString(2);
+
+    while (binary.length< 8) {
            binary = "0" + binary;
-        }
-        decimal = decimal >> 1;
-     }
+        } 
    for(let i=0;i<binary.length;i++){
     let a="radio"
     a+=(i+1)
@@ -48,11 +45,39 @@ function Convert_binary(decimal){
    }
 }
 function check(){
-    let a=document.getElementById("s1");
-    if(a.checked){
-        console.log("on")
+    let s1=document.getElementById("s1").checked;
+    let s2=document.getElementById("s2").checked;
+    let s3=document.getElementById("s3").checked;
+    let s4=document.getElementById("s4").checked;
+    let s5=document.getElementById("s5").checked;
+    let s6=document.getElementById("s6").checked;
+    let s7=document.getElementById("s7").checked;
+    let s8=document.getElementById("s8").checked;
+    let b=[s1,s2,s3,s4,s5,s6,s7,s8]
+    var binary=""
+    for(let i=0;i<8;i++){
+       if(b[i]){
+          binary+=1;
+       }
+       else{
+          binary+=0;
+       }
     }
-    else{
-        console.log("off")
-    }
+    let decimal=parseInt(binary,2);
+    console.log(decimal)
+    let data={
+        value:decimal
+    };
+    fetch('/decimal',{
+    method:'POST',
+    headers :{
+        'content-Type':'application/json'
+    },
+        body:JSON.stringify(data)
+}).then(response =>{
+    console.log("success")
+    console.log(response);
+}).catch(error=>{
+    console.log(error);
+});
 }
