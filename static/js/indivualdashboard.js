@@ -11,6 +11,7 @@ function refresh(){
             
     let a=JSON.parse(data);
     Convert_binary(a[0].Output)
+    //display_relay()
     var dataHTMLformat='<thead><th class="text-center">#</th><th class="text-center">Date</th><th class="text-center">Time</th><th class="text-center">Data</th></thead>'
     a.forEach(function(item){
     
@@ -44,6 +45,7 @@ function Convert_binary(decimal){
     }
    }
 }
+let b=[]
 function check(){
     let s1=document.getElementById("s1").checked;
     let s2=document.getElementById("s2").checked;
@@ -53,7 +55,8 @@ function check(){
     let s6=document.getElementById("s6").checked;
     let s7=document.getElementById("s7").checked;
     let s8=document.getElementById("s8").checked;
-    let b=[s1,s2,s3,s4,s5,s6,s7,s8]
+    b=[s1,s2,s3,s4,s5,s6,s7,s8]
+    console.log("inner",b)
     var binary=""
     for(let i=0;i<8;i++){
        if(b[i]){

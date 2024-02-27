@@ -13,8 +13,12 @@ particular_id = 'SELECT * FROM data WHERE _id = ?'
 Insertquery_Output='INSERT INTO dataOutput(Date,Time,DeviceID,Output) VALUES("%s","%s","%s","%s")';
 particular_id_output='SELECT * FROM dataOutput WHERE DeviceId=? ORDER BY _id DESC;'
 
+Insertquery_send='INSERT INTO datas_output(Date,Time,Data,Device_id) VALUES("%s","%s","%s","%s")';
+
+#update_output = 'UPDATE datas_output SET  WHERE Device_id = ?'
+
 Device_id=0
-decimal_value=0
+
 
 def welcome_msg():
     return "Flask Working fine -- welcome"
@@ -93,7 +97,22 @@ def Createtable2():
     conn.commit()
     conn.close()
 
-def insertdata(Device_id,input):
+def Createtable3():
+    Createtablequery="""CREATE TABLE IF NOT EXISTS "datas_output" (
+                "Date" TEXT NOT NULL,
+                "Time" TEXT NOT NULL,
+                "DeviceId" TEXT NOT NULL,
+                "Output" TEXT NOT NULL,
+                "_id" INTEGER NOT NULL, PRIMARY KEY("_id" AUTOINCREMENT)
+                );
+                """
+    conn=sqlite3.connect(dbfilename)
+    cursor=conn.cursor()
+    cursor.execute(Createtablequery)
+    conn.commit()
+    conn.close()
+
+def insertdata_for_input(Device_id,input):
     conn=sqlite3.connect(dbfilename)
     cursor=conn.cursor()
     date=datetime.now().strftime('%d-%m-%y')
@@ -102,6 +121,28 @@ def insertdata(Device_id,input):
     conn.commit()
     conn.close()
     
+def insertdata_for_output(Device_id):
+    conn=sqlite3.connect(dbfilename)
+    cursor=conn.cursor()
+    date=datetime.now().strftime('%d-%m-%y')
+    time=datetime.now().strftime('%H:%M:%S')
+    cursor.execute(Insertquery_send%(date,time,0,Device_id))
+    conn.commit()
+    conn.close()
+
+
+def update_for_output(Device_id,decimal_value):
+    conn=sqlite3.connect(dbfilename)
+    cursor=conn.cursor()
+    date=str(datetime.now().strftime('%d-%m-%y'))
+    time=str(datetime.now().strftime('%H:%M:%S'))
+    queryString = "UPDATE datas_output SET Date ='"+date+"',Time='"+time+"',Data="+str(decimal_value)+" WHERE Device_id ="+str(Device_id)+""
+    print (queryString)
+    cursor.execute(queryString)
+    conn.commit()
+    conn.close()
+
+
 def fetch_output(DeviceID):
     conn=sqlite3.connect(dbfilename)
     cursor=conn.cursor()
@@ -118,12 +159,19 @@ def insert():
     SWVersion= request.form["SwVersion"]
     Id= request.form["Id"]
     DeviceName=request.form["DeviceName"]
-    conn=sqlite3.connect(dbfilename)
-    cursor=conn.cursor()
-    cursor.execute(Insertquery%(Model,HwVersion,SWVersion,Id,DeviceName))
-    conn.commit()
-    conn.close()
-    Device_id=getLastId()
+    try:
+       
+        conn=sqlite3.connect(dbfilename)
+        cursor=conn.cursor()
+        cursor.execute(Insertquery%(Model,HwVersion,SWVersion,Id,DeviceName))
+        conn.commit()
+        conn.close()
+        Device_id=getLastId()
+        insertdata_for_output(Device_id)
+    except Exception as e:
+        print (e)
+    
+    print(DeviceName)
     return "Succesfully Added"
 
 def getLastId():
@@ -134,15 +182,21 @@ def getLastId():
     conn.close()
     return last_id
 
+
+
+
 @app.route("/iopins",methods=['POST'])
 def io_pins():
-    print("hii")
     input=request.form["input"]
     deviceID=request.form["device_id"]
-    insertdata(deviceID,input)
-    global decimal_value
-    print("ruban",decimal_value)
-    return str(decimal_value)    
+    insertdata_for_input(deviceID,input)
+    selectDeviceQuery = "SELECT * FROM datas_output WHERE Device_id = " + deviceID
+    conn=sqlite3.connect(dbfilename)
+    cursor=conn.cursor()
+    cursor.execute(selectDeviceQuery)
+    device=cursor.fetchall()[0]
+    conn.close()
+    return str(device[3])    
 
 @app.route("/refresh_table")
 def refresh_table():
@@ -213,6 +267,8 @@ def decimal():
         if data and 'value' in data:
             first_data = data['value']
             print("Received data:", first_data)
+            global Device_id
+            update_for_output(Device_id,first_data)
             global decimal_value
             decimal_value=first_data
             return "Successfully received data"
@@ -228,6 +284,5 @@ if __name__ == "__main__":
 
     Createtable()
     Createtable2()
-    #Createtable1()
-    #insert1()  
+    Createtable3() 
     app.run(host="0.0.0.0",debug=True)
