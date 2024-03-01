@@ -6,6 +6,7 @@ function addDevice(){
 }
 function del(id){
     let name="ruban"
+    console.log("hii")
     var xhttp = new XMLHttpRequest();
 
     xhttp.onreadystatechange = function() {

@@ -2,8 +2,13 @@ from flask import Flask,render_template,redirect,request,jsonify,session
 import datetime,sqlite3
 import random
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+
 app = Flask(__name__)
 app.secret_key="ruban"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///IOTgateway.db'
+db = SQLAlchemy(app)
+
 Insertquery='INSERT INTO DATA(Model,HwVersion,SWVersion,Id,DeviceName) VALUES("%s","%s","%s","%s","%s")';
 Fetchquery='SELECT * from data'
 sql_delete_query = """DELETE FROM DATA WHERE _id = ?"""
@@ -18,43 +23,45 @@ Insertquery_send='INSERT INTO datas_output(Date,Time,Data,Device_id) VALUES("%s"
 #update_output = 'UPDATE datas_output SET  WHERE Device_id = ?'
 
 Device_id=0
-user = {"username": "user@123", "password": "temp"}
-@app.route("/")
+users = [{"username": "user@123", "password": "temp"},{"username": "user@321", "password": "temp"}]
+
 def welcome_msg():
     return "Flask Working fine -- welcome"
 
+@app.route("/")
 @app.route('/login',methods=['POST','GET'])
 def login():
     
     if(request.method == 'POST'):
-        print("hii")
         username = request.form.get("email")
         password = request.form.get("password") 
-        print(username)    
-        print(password)
-        if username == user['username'] and password == user['password']:
-            session['user'] = username
-            return redirect('/index3.html')
-
-        return "Wrong username or password"    
+        for user_dict in users:
+            if username == user_dict["username"] and password == user_dict["password"]:
+               session['users'] = username
+               return redirect('/index3.html')
+            Error="Wrong Password"
+            return render_template("login.html",value=Error)    
 
     return render_template("login.html")
 
 @app.route("/index3.html")
 def dashboard():
-    if('user' in session and session['user'] == user['username']):
-        conn=sqlite3.connect(dbfilename)
-        cursor=conn.cursor()
-        cursor.execute(Fetchquery)
-        receivedData=cursor.fetchall()
-        return render_template("index3.html",Result=receivedData)
+    if 'users' in session:  # Check if user is logged in
+        username = session['user']
+        for user_dict in users:
+            if user_dict['username'] == username:
+                conn=sqlite3.connect(dbfilename)
+                cursor=conn.cursor()
+                cursor.execute(Fetchquery)
+                receivedData=cursor.fetchall()
+                return render_template("index3.html",Result=receivedData)
     
-
-    return '<h1>You are not logged in<h1>'
+    Error="You Are Not Login"
+    return render_template("login.html",value=Error)
 
 @app.route("/logout")
 def logout():
-    session["user"] = None
+    session["users"] = None
     return redirect("/login")
 
 
@@ -249,39 +256,45 @@ def Reverse(lst):
 def delete_record():
     try:
         ID = request.form["ID"]
+        
         conn = sqlite3.connect(dbfilename)
         cursor = conn.cursor()
-        print("SQL Query:", sql_delete_query)
+        
+
+        sql_delete_query = "DELETE FROM data WHERE _id = ?"
         cursor.execute(sql_delete_query, (ID,))
-        delete_input(ID)
-        delete_output(ID)
+     
+        delete_input(conn, cursor, ID)
+        delete_output(conn, cursor, ID)
+        
         conn.commit()
         cursor.close()
         conn.close()
+        
         return "Successfully deleted"
     except Exception as e:
         print("Exception:", str(e))
         return "An error occurred", 500
-       
-def delete_input(deviceId):
+
+def delete_input(conn, cursor, deviceId):
+    try:
         print("input")
-        datas_input_delete_query="""DELETE FROM dataOutput WHERE DeviceId = ?"""
-        conn = sqlite3.connect(dbfilename)
-        cursor = conn.cursor()
+        datas_input_delete_query = "DELETE FROM dataOutput WHERE DeviceId = ?"
         cursor.execute(datas_input_delete_query, (deviceId,))
         conn.commit()
-        cursor.close()
-        conn.close()
+    except Exception as e:
+        print("An error occurred:", str(e))
+        return "An error occurred", 500
 
-def delete_output(deviceId):   
+def delete_output(conn, cursor, deviceId):
+    try:
         print("output")
-        datas_output_delete_query = """DELETE FROM datas_output WHERE Device_id = ?"""
-        conn = sqlite3.connect(dbfilename)
-        cursor = conn.cursor()
+        datas_output_delete_query = "DELETE FROM datas_output WHERE Device_id = ?"
         cursor.execute(datas_output_delete_query, (deviceId,))
         conn.commit()
-        cursor.close()
-        conn.close()
+    except Exception as e:
+        print("An error occurred:", str(e))
+        return "An error occurred", 500
 
 @app.route("/refresh")
 def refresh():

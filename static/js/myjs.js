@@ -1,4 +1,12 @@
-
+try{
+    document.getElementById("myBtn1").addEventListener("click",function(e){
+        e.preventDefault();
+    });
+    
+}
+catch(Exception){
+   
+}
 
 function hrefFunction(){
     const password="temp"
@@ -26,3 +34,8 @@ function hrefFunction(){
         parent.appendChild(newdiv);
     }
 }
+
+setTimeout(function () {
+    $("#div").delay(5000).fadeOut(500);
+}, 1000);
+   

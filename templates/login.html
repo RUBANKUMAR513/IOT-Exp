@@ -32,12 +32,19 @@
 
     <!-- Main CSS-->
     <link href="../static/css/theme.css" rel="stylesheet" media="all">
+    <link href="../static/css/mystyle.css" rel="stylesheet">
 
 </head>
 
 <body class="animsition">
     <div class="page-wrapper">
         <div id="alert">
+            {% if value=="Wrong Password" %}
+                 <div id="div" class="alert alert-danger" role="alert" style="text-align: center;">{{value}}</div>
+       
+            {% elif value=="You Are Not Login" %}
+                 <div id="div" class="alert alert-danger" role="alert" style="text-align: center;">{{value}}</div>
+            {% endif %}
             
         </div>
         <div class="page-content--bge5">
@@ -55,10 +62,8 @@
                                     <input id="password" class="au-input au-input--full" type="password" name="password" placeholder="Password">
                                 </div>
                                </form>
-                                <button id="myBtn" form="store_inputs" class="au-btn au-btn--block au-btn--green m-b-20" type="submit">sign in</button>
-								
-                               
-                           
+                                <button form="store_inputs" class="au-btn au-btn--block au-btn--green m-b-20" type="submit">sign in</button>
+								<button id="signup" class="au-btn au-btn--block au-btn--green m-b-20" onclick="window.location='/index3.html'" type="submit">sign Up</button>
                             
                         </div>
                     </div>
