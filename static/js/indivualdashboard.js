@@ -45,7 +45,7 @@ function Convert_binary(decimal){
     }
    }
 }
-let b=[]
+let b=[];
 function check(){
     let s1=document.getElementById("s1").checked;
     let s2=document.getElementById("s2").checked;
@@ -56,7 +56,7 @@ function check(){
     let s7=document.getElementById("s7").checked;
     let s8=document.getElementById("s8").checked;
     b=[s1,s2,s3,s4,s5,s6,s7,s8]
-    console.log("inner",b)
+    
     var binary=""
     for(let i=0;i<8;i++){
        if(b[i]){
@@ -83,4 +83,36 @@ function check(){
 }).catch(error=>{
     console.log(error);
 });
+
+}
+outputbox();
+function outputbox(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        let decimal= this.responseText;
+        console.log(decimal)
+        decimal=Number(decimal)
+        console.log(decimal)
+        let binary=decimal.toString(2);
+    while (binary.length< 8) {
+           binary = "0" + binary;
+        } 
+   console.log(binary)
+   for(let i=0;i<binary.length;i++){
+    let a="s"
+    a+=(i+1)
+    if(binary[i]==1){
+        document.getElementById(a).click();
+    }
+    else if(binary[i]==0){
+        continue;
+    }
+   }
+       
+    }
+    };
+    xhttp.open("POST","/show_output", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("hii");
 }

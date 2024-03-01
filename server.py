@@ -1,9 +1,9 @@
-from flask import Flask,render_template,redirect,request,jsonify
+from flask import Flask,render_template,redirect,request,jsonify,session
 import datetime,sqlite3
 import random
 from datetime import datetime
 app = Flask(__name__)
-
+app.secret_key="ruban"
 Insertquery='INSERT INTO DATA(Model,HwVersion,SWVersion,Id,DeviceName) VALUES("%s","%s","%s","%s","%s")';
 Fetchquery='SELECT * from data'
 sql_delete_query = """DELETE FROM DATA WHERE _id = ?"""
@@ -18,26 +18,45 @@ Insertquery_send='INSERT INTO datas_output(Date,Time,Data,Device_id) VALUES("%s"
 #update_output = 'UPDATE datas_output SET  WHERE Device_id = ?'
 
 Device_id=0
-
-
+user = {"username": "user@123", "password": "temp"}
+@app.route("/")
 def welcome_msg():
     return "Flask Working fine -- welcome"
 
-@app.route("/")
+@app.route('/login',methods=['POST','GET'])
 def login():
-    return render_template("login.html")
+    
+    if(request.method == 'POST'):
+        print("hii")
+        username = request.form.get("email")
+        password = request.form.get("password") 
+        print(username)    
+        print(password)
+        if username == user['username'] and password == user['password']:
+            session['user'] = username
+            return redirect('/index3.html')
 
-@app.route("/login.html")
-def logout():
+        return "Wrong username or password"    
+
     return render_template("login.html")
 
 @app.route("/index3.html")
 def dashboard():
-    conn=sqlite3.connect(dbfilename)
-    cursor=conn.cursor()
-    cursor.execute(Fetchquery)
-    receivedData=cursor.fetchall()
-    return render_template("index3.html",Result=receivedData)
+    if('user' in session and session['user'] == user['username']):
+        conn=sqlite3.connect(dbfilename)
+        cursor=conn.cursor()
+        cursor.execute(Fetchquery)
+        receivedData=cursor.fetchall()
+        return render_template("index3.html",Result=receivedData)
+    
+
+    return '<h1>You are not logged in<h1>'
+
+@app.route("/logout")
+def logout():
+    session["user"] = None
+    return redirect("/login")
+
 
 @app.route("/formEdited.html")
 def form_input():
@@ -50,7 +69,6 @@ def inner_device():
         id = request.args["id"]
         global Device_id
         Device_id=id
-        print(Device_id)
         conn = sqlite3.connect(dbfilename)
         cursor = conn.cursor()
         cursor.execute(particular_id, (id,))
@@ -187,8 +205,14 @@ def getLastId():
 
 @app.route("/iopins",methods=['POST'])
 def io_pins():
-    input=request.form["input"]
-    deviceID=request.form["device_id"]
+    try:
+       input=request.form["input"]
+    except Exception as e:
+       return "Give some data"
+    try:
+        deviceID=request.form["device_id"]
+    except Exception as e:
+        deviceID="51"
     insertdata_for_input(deviceID,input)
     selectDeviceQuery = "SELECT * FROM datas_output WHERE Device_id = " + deviceID
     conn=sqlite3.connect(dbfilename)
@@ -229,15 +253,35 @@ def delete_record():
         cursor = conn.cursor()
         print("SQL Query:", sql_delete_query)
         cursor.execute(sql_delete_query, (ID,))
+        delete_input(ID)
+        delete_output(ID)
         conn.commit()
         cursor.close()
         conn.close()
         return "Successfully deleted"
-
     except Exception as e:
         print("Exception:", str(e))
         return "An error occurred", 500
        
+def delete_input(deviceId):
+        print("input")
+        datas_input_delete_query="""DELETE FROM dataOutput WHERE DeviceId = ?"""
+        conn = sqlite3.connect(dbfilename)
+        cursor = conn.cursor()
+        cursor.execute(datas_input_delete_query, (deviceId,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+def delete_output(deviceId):   
+        print("output")
+        datas_output_delete_query = """DELETE FROM datas_output WHERE Device_id = ?"""
+        conn = sqlite3.connect(dbfilename)
+        cursor = conn.cursor()
+        cursor.execute(datas_output_delete_query, (deviceId,))
+        conn.commit()
+        cursor.close()
+        conn.close()
 
 @app.route("/refresh")
 def refresh():
@@ -279,6 +323,20 @@ def decimal():
         return "Error: Internal Server Error", 500
 
 
+@app.route("/show_output", methods=['POST'])
+def show():
+    #global Device_id
+    #print(Device_id)
+    #print("hlo",Device_id)
+    selectDeviceQuery = "SELECT * FROM datas_output WHERE Device_id = " + str(Device_id)
+    conn=sqlite3.connect(dbfilename)
+    cursor=conn.cursor()
+    cursor.execute(selectDeviceQuery)
+    devices=cursor.fetchall()[0]
+    conn.close()
+    return str(devices[3])
+    
+      
 
 if __name__ == "__main__":
 

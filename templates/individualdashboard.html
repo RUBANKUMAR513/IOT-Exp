@@ -66,9 +66,11 @@
                     <div>
                       <button onclick="back()"><i class="fa-solid fa-arrow-left fa-xl" style="color:white;"></i></button>
                     </div>
+                    {% for rows in Result %}
                     <div class="heading_for_dashboard" style="margin-left: 100px;">
-                        <h2>DeviceName</h2>
+                        <h2>{{rows[4]}}</h2>
                     </div>
+                    {% endfor %}
                     <div class="header__tool"style="margin-left: 220px;">
                         <div class="account-wrap">
                             <div class="account-item account-item--style2 clearfix js-item-menu">
@@ -77,7 +79,7 @@
                                 </div>
                                 <div class="account-dropdown js-dropdown">
                                     <div class="account-dropdown__footer">
-                                        <a href="index3.html">
+                                        <a href="/logout">
                                             <i class="zmdi zmdi-power"></i>Logout</a>
                                     </div>
                                 </div>

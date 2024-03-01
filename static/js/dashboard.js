@@ -6,7 +6,6 @@ function addDevice(){
 }
 function del(id){
     let name="ruban"
-    console.log("hii",id)
     var xhttp = new XMLHttpRequest();
 
     xhttp.onreadystatechange = function() {
@@ -20,7 +19,6 @@ function del(id){
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
     xhttp.send("ID="+id+"&Name="+name);
-    console.log("done")
 }
 
 function refresh(){

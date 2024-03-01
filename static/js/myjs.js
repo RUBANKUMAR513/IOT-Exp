@@ -1,6 +1,5 @@
-document.getElementById("store_inputs").addEventListener("click", function(e){
-    e.preventDefault();
-});
+
+
 function hrefFunction(){
     const password="temp"
     const user="user@123"

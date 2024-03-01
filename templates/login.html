@@ -45,7 +45,7 @@
                 <div class="login-wrap" style="margin-top:10% ;">
                     <div class="login-content">
                         <div class="login-form">
-                            <form id="store_inputs" method="post">
+                            <form action="/login" id="store_inputs" method="post">
                                 <div class="form-group">
                                     <label>Email Address</label>
                                     <input id="email" class="au-input au-input--full" type="email" name="email" placeholder="Email">
@@ -54,11 +54,11 @@
                                     <label>Password</label>
                                     <input id="password" class="au-input au-input--full" type="password" name="password" placeholder="Password">
                                 </div>
-                               
-                                <button id="myBtn" class="au-btn au-btn--block au-btn--green m-b-20" type="submit" onclick="hrefFunction()">sign in</button>
+                               </form>
+                                <button id="myBtn" form="store_inputs" class="au-btn au-btn--block au-btn--green m-b-20" type="submit">sign in</button>
 								
                                
-                            </form>
+                           
                             
                         </div>
                     </div>
