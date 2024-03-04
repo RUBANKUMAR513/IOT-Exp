@@ -2,19 +2,19 @@ from flask import Flask,render_template,redirect,request,jsonify,session
 import datetime,sqlite3
 import random
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
 app.secret_key="ruban"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///IOTgateway.db'
-db = SQLAlchemy(app)
+
+
 
 Insertquery='INSERT INTO DATA(Model,HwVersion,SWVersion,Id,DeviceName) VALUES("%s","%s","%s","%s","%s")';
-Fetchquery='SELECT * from data'
+Fetchquery='SELECT * from data WHERE _id !=?'
 sql_delete_query = """DELETE FROM DATA WHERE _id = ?"""
 dbfilename = "IOTgateway.db"
 particular_id = 'SELECT * FROM data WHERE _id = ?'
-
+Insertquery_for_user_data='INSERT INTO users(Username,Email,Password,Terms) VALUES("%s","%s","%d","%s")';
 Insertquery_Output='INSERT INTO dataOutput(Date,Time,DeviceID,Output) VALUES("%s","%s","%s","%s")';
 particular_id_output='SELECT * FROM dataOutput WHERE DeviceId=? ORDER BY _id DESC;'
 
@@ -23,10 +23,61 @@ Insertquery_send='INSERT INTO datas_output(Date,Time,Data,Device_id) VALUES("%s"
 #update_output = 'UPDATE datas_output SET  WHERE Device_id = ?'
 
 Device_id=0
-users = [{"username": "user@123", "password": "temp"},{"username": "user@321", "password": "temp"}]
+user_name=""
+dbfilename_for_user="IOTuser.db"
+
+
+def Createusertabler():
+    Createtablequery_for_user="""CREATE TABLE IF NOT EXISTS "users" (
+                "Username" TEXT NOT NULL,
+                "Email" TEXT NOT NULL,
+                "Password" INTEGER NOT NULL,
+                "Terms" TEXT NOT NULL,
+                "_id" INTEGER NOT NULL, PRIMARY KEY("_id" AUTOINCREMENT)
+                );"""
+    conn=sqlite3.connect(dbfilename_for_user)
+    cursor=conn.cursor()
+    cursor.execute(Createtablequery_for_user)
+    conn.commit()
+    conn.close()
+
+@app.route("/register")
+def signup():
+     return render_template("register.html")
+
+@app.route("/store_inputs",methods=['POST'])
+def storeuser():
+    username = request.form["username"]
+    email= request.form["email"]
+    Password= int(request.form["password"])
+    Terms= request.form["terms"]
+    print(username,email,Password,Terms)
+    conn=sqlite3.connect(dbfilename_for_user)
+    cursor=conn.cursor()
+    cursor.execute(Insertquery_for_user_data%(username,email,Password,Terms))
+    conn.commit()
+    conn.close()
+    return("success")
+
 
 def welcome_msg():
     return "Flask Working fine -- welcome"
+
+def find_matching(email):
+     try:
+        user_email_query='SELECT username,password FROM users WHERE Email = ?'
+        conn = sqlite3.connect(dbfilename_for_user)
+        cursor = conn.cursor()
+        cursor.execute(user_email_query, (email,))
+        password = cursor.fetchone()
+        print(password)
+        conn.close()
+        if password:
+            return (password)
+        else:
+            return None
+     except Exception as e:
+        return (e)
 
 @app.route("/")
 @app.route('/login',methods=['POST','GET'])
@@ -34,40 +85,45 @@ def login():
     
     if(request.method == 'POST'):
         username = request.form.get("email")
-        password = request.form.get("password") 
-        for user_dict in users:
-            if username == user_dict["username"] and password == user_dict["password"]:
-               session['users'] = username
+        password = request.form.get("password")
+        user_info=find_matching(username)
+        db_password=str(user_info[1])
+        global user_name
+        user_name=user_info[0]
+        print("2",db_password) 
+        if db_password and password == db_password:
+               session['user'] = username
                return redirect('/index3.html')
-            Error="Wrong Password"
-            return render_template("login.html",value=Error)    
+        Error="Wrong Password"
+        return render_template("login.html",value=Error)    
 
     return render_template("login.html")
 
 @app.route("/index3.html")
 def dashboard():
-    if 'users' in session:  # Check if user is logged in
+    if 'user' in session:  # Check if user is logged in
         username = session['user']
-        for user_dict in users:
-            if user_dict['username'] == username:
-                conn=sqlite3.connect(dbfilename)
-                cursor=conn.cursor()
-                cursor.execute(Fetchquery)
-                receivedData=cursor.fetchall()
-                return render_template("index3.html",Result=receivedData)
+        conn=sqlite3.connect(dbfilename)
+        cursor=conn.cursor()
+        cursor.execute(Fetchquery,(51,))
+        receivedData=cursor.fetchall()
+        global user_name
+        print("username",user_name)
+        return render_template("index3.html",Result=receivedData,username=user_name)
     
     Error="You Are Not Login"
     return render_template("login.html",value=Error)
 
 @app.route("/logout")
 def logout():
-    session["users"] = None
+    session.pop('user',None)
     return redirect("/login")
 
 
 @app.route("/formEdited.html")
 def form_input():
-    return render_template("formEdited.html")
+    global user_name
+    return render_template("formEdited.html",username=user_name)
 
 
 @app.route("/individualdashboard.html",methods=['GET'])
@@ -82,7 +138,8 @@ def inner_device():
         receivedData = cursor.fetchall()
         conn.close()
         receivedData2=fetch_output(id)
-        return render_template("individualdashboard.html", Result=receivedData, Result2=receivedData2)
+        global user_name
+        return render_template("individualdashboard.html", Result=receivedData, Result2=receivedData2,username=user_name)
 
     except Exception as e:
         print("An error occurred:", e)
