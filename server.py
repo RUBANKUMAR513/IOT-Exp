@@ -24,7 +24,7 @@ Insertquery_send='INSERT INTO datas_output(Date,Time,Data,Device_id) VALUES("%s"
 
 Device_id=0
 user_name=""
-dbfilename_for_user="IOTuser.db"
+
 
 
 def Createusertabler():
@@ -35,7 +35,7 @@ def Createusertabler():
                 "Terms" TEXT NOT NULL,
                 "_id" INTEGER NOT NULL, PRIMARY KEY("_id" AUTOINCREMENT)
                 );"""
-    conn=sqlite3.connect(dbfilename_for_user)
+    conn=sqlite3.connect(dbfilename)
     cursor=conn.cursor()
     cursor.execute(Createtablequery_for_user)
     conn.commit()
@@ -52,13 +52,31 @@ def storeuser():
     Password= int(request.form["password"])
     Terms= request.form["terms"]
     print(username,email,Password,Terms)
-    conn=sqlite3.connect(dbfilename_for_user)
-    cursor=conn.cursor()
-    cursor.execute(Insertquery_for_user_data%(username,email,Password,Terms))
-    conn.commit()
-    conn.close()
-    return("success")
-
+    if Check_if_exists(email):
+        return("Erorr")
+    else:
+        conn=sqlite3.connect(dbfilename)
+        cursor=conn.cursor()
+        cursor.execute(Insertquery_for_user_data%(username,email,Password,Terms))
+        conn.commit()
+        conn.close()
+        return("success")
+    
+def Check_if_exists(email):
+    try:
+        user_email_query='SELECT username,password FROM users WHERE Email = ?'
+        conn = sqlite3.connect(dbfilename)
+        cursor = conn.cursor()
+        cursor.execute(user_email_query, (email,))
+        password = cursor.fetchone()
+        print(password)
+        conn.close()
+        if password:
+            return True
+        else:
+            return None
+    except Exception as e:
+        return False
 
 def welcome_msg():
     return "Flask Working fine -- welcome"
@@ -66,7 +84,7 @@ def welcome_msg():
 def find_matching(email):
      try:
         user_email_query='SELECT username,password FROM users WHERE Email = ?'
-        conn = sqlite3.connect(dbfilename_for_user)
+        conn = sqlite3.connect(dbfilename)
         cursor = conn.cursor()
         cursor.execute(user_email_query, (email,))
         password = cursor.fetchone()
@@ -98,6 +116,7 @@ def login():
         return render_template("login.html",value=Error)    
 
     return render_template("login.html")
+
 
 @app.route("/index3.html")
 def dashboard():
@@ -284,7 +303,35 @@ def io_pins():
     cursor.execute(selectDeviceQuery)
     device=cursor.fetchall()[0]
     conn.close()
-    return str(device[3])    
+    return str(device[3])
+
+@app.route("/deleteuser",methods=['GET'])
+def delete_user():
+    try:
+        email_id = request.args["email_id"]
+        print(email_id)
+        conn = sqlite3.connect(dbfilename)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * from users where Email = '%s'"%email_id)
+        
+        user = cursor.fetchall()
+        
+        print (len(user))
+        if len(user) == 0:
+            return "Email not found"
+        
+        sql_delete_query_for_user = "DELETE FROM users WHERE Email = '%s'"%email_id
+        cursor.execute(sql_delete_query_for_user)
+        # cursor.close()
+        conn.commit()
+        conn.close()
+
+        return "Successfully deleted"
+    
+    except Exception as e:
+        print("Exception:", str(e))
+        return "An error occurred", 500
 
 @app.route("/refresh_table")
 def refresh_table():
@@ -409,7 +456,8 @@ def show():
       
 
 if __name__ == "__main__":
-
+    
+    Createusertabler()
     Createtable()
     Createtable2()
     Createtable3() 
