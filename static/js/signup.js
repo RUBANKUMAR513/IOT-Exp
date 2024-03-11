@@ -92,8 +92,9 @@ else if(msg=="Something went wrong"){
         parent.appendChild(newDiv);
         setTimeout(() => {
             $("#div").delay(5000).fadeOut(500);
+            window.location.href="/login"
     }, 1000);
-    window.location.href="/login"
+    
     }
 
 }
