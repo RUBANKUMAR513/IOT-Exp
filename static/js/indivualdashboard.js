@@ -1,5 +1,5 @@
-function back(){
-    window.location.href="index3.html"
+function back(user_id){
+    window.location.href = "/dashboard/" + user_id;
 }
 setInterval(refresh, 5000);
 function refresh(){
@@ -91,14 +91,14 @@ function outputbox(){
     xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         let decimal= this.responseText;
-        console.log(decimal)
+        console.log("decimal---->"+decimal)
         decimal=Number(decimal)
-        console.log(decimal)
+        console.log("decimal---->"+decimal)
         let binary=decimal.toString(2);
     while (binary.length< 8) {
            binary = "0" + binary;
         } 
-   console.log(binary)
+   console.log("binary----->"+binary)
    for(let i=0;i<binary.length;i++){
     let a="s"
     a+=(i+1)

@@ -2,8 +2,8 @@
 document.getElementById("store_inputs").addEventListener("click", function(e){
     e.preventDefault();
 });
-function back(){
-    window.location.href="index3.html"
+function back(user_id){
+    window.location.href = "/dashboard/" + user_id;
 }
 function clr_form(){
     document.getElementById("store_inputs").reset();
@@ -13,14 +13,14 @@ function details(model,hwversion,swversion,id,devicename){
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-        console.log(this.responseText);
+        user_id=this.responseText;
         const newdiv=document.createElement("div");
         newdiv.className="alert alert-success";
         newdiv.role="alert";
         newdiv.style.textAlign="center";
         newdiv.textContent="Device Successfully Added! If you want to redirect dashboard ";
         const a_tag=document.createElement("a");
-        a_tag.href="/index3.html";
+        a_tag.href="/dashboard/" + user_id;
         a_tag.className="alert-link";
 
         a_tag.textContent="CLICK HERE";

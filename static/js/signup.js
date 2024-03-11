@@ -20,7 +20,7 @@ xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 xhttp.send("username="+username+"&email="+email+"&password="+password+"&terms="+terms);
 }
 function  assign(msg) {
-    if(msg=="Erorr"){
+    if(msg=="Email already exists"){
         console.log("hii")
         const newDiv = document.createElement("div");
         newDiv.className="alert alert-danger";
@@ -35,7 +35,52 @@ function  assign(msg) {
             $("#div").delay(5000).fadeOut(500);
     }, 1000);
     }
-    else if(msg=="success"){
+    else if(msg=="Missing required fields"){
+        console.log("hii")
+        const newDiv = document.createElement("div");
+        newDiv.className="alert alert-danger";
+        newDiv.id="div"
+        newDiv.style.textAlign="center";
+        newDiv.role="alert";
+        newDiv.textContent="Missing required fields";
+        const parent = document.getElementById("row");
+        console.log("row"+parent);
+        parent.appendChild(newDiv);
+        setTimeout(() => {
+            $("#div").delay(5000).fadeOut(500);
+    }, 1000);
+}
+else if(msg=="Failed to insert user"){
+    console.log("hii")
+    const newDiv = document.createElement("div");
+    newDiv.className="alert alert-danger";
+    newDiv.id="div"
+    newDiv.style.textAlign="center";
+    newDiv.role="alert";
+    newDiv.textContent="Failed to insert user";
+    const parent = document.getElementById("row");
+    console.log("row"+parent);
+    parent.appendChild(newDiv);
+    setTimeout(() => {
+        $("#div").delay(5000).fadeOut(500);
+}, 1000);
+}
+else if(msg=="Something went wrong"){
+    console.log("hii")
+    const newDiv = document.createElement("div");
+    newDiv.className="alert alert-danger";
+    newDiv.id="div"
+    newDiv.style.textAlign="center";
+    newDiv.role="alert";
+    newDiv.textContent="Something went wrong";
+    const parent = document.getElementById("row");
+    console.log("row"+parent);
+    parent.appendChild(newDiv);
+    setTimeout(() => {
+        $("#div").delay(5000).fadeOut(500);
+}, 1000);
+}
+    else if(msg=="Success"){
         const newDiv = document.createElement("div");
         newDiv.className="alert alert-success";
         newDiv.id="div"

@@ -2,7 +2,7 @@ function back(){
     window.location.href="login.html"
 }
 function addDevice(){
-    window.location.href="formEdited.html"
+    window.location.href="/formEdited.html"
 }
 function del(id){
     let name="ruban"

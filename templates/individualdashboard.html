@@ -64,7 +64,7 @@
                 <div class="header3-wrap">
                     
                     <div>
-                      <button onclick="back()"><i class="fa-solid fa-arrow-left fa-xl" style="color:white;"></i></button>
+                      <button onclick="back('{{ user_id }}')"><i class="fa-solid fa-arrow-left fa-xl" style="color:white;"></i></button>
                     </div>
                     {% for rows in Result %}
                     <div class="heading_for_dashboard" style="margin-left: 100px;">
@@ -75,7 +75,7 @@
                         <div class="account-wrap">
                             <div class="account-item account-item--style2 clearfix js-item-menu">
                                 <div class="content">
-                                    <a class="js-acc-btn" href="#">RUBAN KUMAR</a>
+                                    <a class="js-acc-btn" href="#">{{username}}</a>
                                 </div>
                                 <div class="account-dropdown js-dropdown">
                                     <div class="account-dropdown__footer">
