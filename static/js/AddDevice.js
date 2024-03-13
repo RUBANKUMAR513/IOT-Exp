@@ -14,19 +14,31 @@ function details(model,hwversion,swversion,id,devicename){
     xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         user_id=this.responseText;
+        if(/^\d+$/.test(user_id)){
+            const newdiv=document.createElement("div");
+            newdiv.className="alert alert-success";
+            newdiv.role="alert";
+            newdiv.style.textAlign="center";
+            newdiv.textContent="Device Successfully Added! If you want to redirect dashboard ";
+            const a_tag=document.createElement("a");
+            a_tag.href="/dashboard/" + user_id;
+            a_tag.className="alert-link";
+    
+            a_tag.textContent="CLICK HERE";
+            newdiv.appendChild(a_tag);
+            const parent=document.getElementById("Alerts");
+            parent.appendChild(newdiv);
+        }
+        else{
         const newdiv=document.createElement("div");
-        newdiv.className="alert alert-success";
+        newdiv.className="alert alert-danger";
         newdiv.role="alert";
         newdiv.style.textAlign="center";
-        newdiv.textContent="Device Successfully Added! If you want to redirect dashboard ";
-        const a_tag=document.createElement("a");
-        a_tag.href="/dashboard/" + user_id;
-        a_tag.className="alert-link";
-
-        a_tag.textContent="CLICK HERE";
-        newdiv.appendChild(a_tag);
+        newdiv.textContent=user_id;
         const parent=document.getElementById("Alerts");
         parent.appendChild(newdiv);
+        }
+        
     }
     };
     xhttp.open("POST","/insertdata", true);
@@ -42,7 +54,28 @@ function checkvalidation(){
     let id = storeform['cc-exp'].value;
     let devicename = storeform['x_card_code'].value;
     const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,<>\/?~]/
-    if(model=="" || hwversion=="" || swversion=="" || id=="" || devicename=="") {
+    const isWhitespaceString = str => !str.replace(/\s/g, '').length
+
+   /*if(isnow(id)){
+        const newdiv=document.createElement("div");
+        newdiv.className="alert alert-danger";
+        newdiv.role="alert";
+        newdiv.style.textAlign="center";
+        newdiv.textContent="Id must be Unique!";
+        const parent=document.getElementById("Alerts");
+        parent.appendChild(newdiv);
+   } */
+
+    if(isWhitespaceString(model)|| isWhitespaceString(hwversion) || isWhitespaceString(swversion) || isWhitespaceString(id) || isWhitespaceString(devicename) ){
+        const newdiv=document.createElement("div");
+        newdiv.className="alert alert-danger";
+        newdiv.role="alert";
+        newdiv.style.textAlign="center";
+        newdiv.textContent="Space is Not allowed!";
+        const parent=document.getElementById("Alerts");
+        parent.appendChild(newdiv);
+    }
+   else if(model=="" || hwversion=="" || swversion=="" || id=="" || devicename=="") {
     	const newdiv=document.createElement("div");
         newdiv.className="alert alert-danger";
         newdiv.role="alert";
@@ -52,15 +85,7 @@ function checkvalidation(){
         parent.appendChild(newdiv);
         
     }
-    else if(/[A-Za-z]/.test(id)){
-        const newdiv=document.createElement("div");
-        newdiv.className="alert alert-danger";
-        newdiv.role="alert";
-        newdiv.style.textAlign="center";
-        newdiv.textContent="Alphabets Do Not allowed In ID!";
-        const parent=document.getElementById("Alerts");
-        parent.appendChild(newdiv);
-     }
+
      else if(/[A-Za-z]/.test(swversion)){
         const newdiv=document.createElement("div");
         newdiv.className="alert alert-danger";
@@ -85,6 +110,15 @@ function checkvalidation(){
         newdiv.role="alert";
         newdiv.style.textAlign="center";
         newdiv.textContent="Special Character's Do Not Allowed!";
+        const parent=document.getElementById("Alerts");
+        parent.appendChild(newdiv);
+     }
+     else if(devicename.length<6 || devicename.length > 15){
+        const newdiv=document.createElement("div");
+        newdiv.className="alert alert-danger";
+        newdiv.role="alert";
+        newdiv.style.textAlign="center";
+        newdiv.textContent="DeviceName allowed Minimum 6 characters and maximum 15characters !";
         const parent=document.getElementById("Alerts");
         parent.appendChild(newdiv);
      }

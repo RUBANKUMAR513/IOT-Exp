@@ -228,7 +228,7 @@ def Createtable():
         "Model" TEXT NOT NULL,
         "HwVersion" TEXT NOT NULL,
         "SWVersion" TEXT NOT NULL,
-        "Id" TEXT NOT NULL,
+        "Id" TEXT NOT NULL UNIQUE,
         "DeviceName" TEXT NOT NULL,
         "User_Id" TEXT NOT NULL,
         "_id" INTEGER NOT NULL, PRIMARY KEY("_id" AUTOINCREMENT)
@@ -307,19 +307,24 @@ def insert():
     DeviceName = request.form["DeviceName"]
     User_Id = session.get('user_id')
     print("User_Id:", User_Id)  
+    conn = sqlite3.connect(dbfilename)
+    cursor = conn.cursor()
+    
     try:
-        conn = sqlite3.connect(dbfilename)
-        cursor = conn.cursor()
         cursor.execute(Insertquery % (Model, HwVersion, SWVersion, Id, User_Id, DeviceName))
         conn.commit()
         conn.close()
         Device_id = getLastId()
         insertdata_for_output(Device_id)
-        print("Successfully added data for Device:", DeviceName) 
+        print("Successfully added data for Device:", DeviceName)
+        user_id=str(User_Id)
+        return user_id
     except Exception as e:
-        print("Error:", e)  
-    user_id=str(User_Id)
-    return user_id
+        conn.commit()
+        conn.close()
+        print("Error:", e)
+        return str(e)  
+    
 
 def getLastId():
     conn=sqlite3.connect(dbfilename)
@@ -509,7 +514,23 @@ def refresh():
         })
     
     return jsonify(data)
-
+@app.route("/checkID",methods=['POST'])
+def isnow():
+    try:
+        id = request.form["Id"]
+        searchquery='SELECT * FROM device_details WHERE Id = ?'
+        conn=sqlite3.connect(dbfilename)
+        cursor=conn.cursor()
+        cursor.execute(searchquery,(id,))
+        device = cursor.fetchone()
+        print("device:",device)
+        if device == None:
+            device = 'None'
+            print("fdff")
+        conn.close()
+        return str(device)
+    except Exception as e:
+        return "False"
 
 @app.route("/decimal", methods=['POST'])
 def decimal():
